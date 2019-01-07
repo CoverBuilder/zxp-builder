@@ -1,0 +1,43 @@
+{
+  "name": "zxp-builder",
+  "version": "0.1.0",
+  "description": "Adobe Extension Packager",
+  "main": "zxp-builder.js",
+  "bin": {
+    "zxpbuild": "zxp-builder.js"
+  },
+  "scripts": {
+    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/zxpSignCmd.test.js ./test/zxpbuild.test.js",
+    "testPs": "zxpbuild -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/CoverBuilder/zxp-builder.git"
+  },
+  "keywords": [
+    "zxp",
+    "build",
+    "sign",
+    "package",
+    "adobe",
+    "extension",
+    "plugin",
+    "exchange"
+  ],
+  "author": "Bruno Herfst",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/CoverBuilder/zxp-builder/issues"
+  },
+  "homepage": "https://github.com/CoverBuilder/zxp-builder#readme",
+  "dependencies": {
+    "commander": "^2.19.0",
+    "zxp-sign-cmd": "^1.0.0"
+  },
+  "devDependencies": {
+    "add-local-binaries-to-path": "^1.1.3",
+    "chai": "^4.1.2",
+    "mocha": "^5.0.4",
+    "node-cmd": "^3.0.0"
+  }
+}
