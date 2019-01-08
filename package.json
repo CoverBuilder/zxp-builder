@@ -4,11 +4,14 @@
   "description": "Adobe Extension Packager",
   "main": "zxp-builder.js",
   "bin": {
-    "zxpbuild": "zxp-builder.js"
+    "certgen": "certgen.js",
+    "zxpbuild": "zxpbuild.js"
   },
   "scripts": {
-    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/zxpSignCmd.test.js ./test/zxpbuild.test.js",
-    "testPs": "zxpbuild -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p"
+    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/certgen.test.js ./test/zxpbuild.test.js",
+    "test-build": "npm link && certgen -c AU -s Victoria -g Corp -n testCert -o ./bin/testCert.p12 -p testPs && zxpbuild -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p testPs;",
+    "test-cert": "npm link && certgen -c AU -s Victoria -g Corp -n testCert -o ./bin/testCert.p12 -p",
+    "test-sign": "npm link && zxpbuild -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p"
   },
   "repository": {
     "type": "git",
@@ -16,6 +19,8 @@
   },
   "keywords": [
     "zxp",
+    "p12",
+    "certificate",
     "build",
     "sign",
     "package",
@@ -24,7 +29,16 @@
     "plugin",
     "exchange"
   ],
-  "author": "Bruno Herfst",
+  "contributors": [
+    {
+      "name": "Jake Brown",
+      "url": "https://github.com/codearoni"
+    },
+    {
+      "name": "Bruno Herfst",
+      "url": "https://github.com/GitBruno"
+    }
+  ],
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/CoverBuilder/zxp-builder/issues"

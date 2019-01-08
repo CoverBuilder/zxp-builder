@@ -12,11 +12,6 @@ var path = require('path'),
     testZxpName = 'test',
     testZxpLoc = path.join(__dirname, '..', 'bin', testZxpName + '.zxp');
 
-var matchCheck = function(stdout, match){
-    expect(stdout).to.match(match);
-    done();
-};
-
 describe('zxpbuild tests', function () {
     this.timeout(15000);
 
