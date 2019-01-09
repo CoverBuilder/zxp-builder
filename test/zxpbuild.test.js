@@ -15,69 +15,50 @@ var path = require('path'),
 describe('zxpbuild tests', function () {
     this.timeout(15000);
 
-    var options = [];
-    var testCommand = '';
+    var signOptions = [];
+    var signCommand = '';
+    var buildOptions = [];
+    var buildCommand = '';
 
     beforeEach(function () {
-        testCommand = 'zxpbuild ';
-        options  = [
-            '--input',
-            path.join(__dirname, 'ext'),
-            '--output',
-            testZxpLoc,
-            '--cert',
+        signCommand = 'zxpbuild cert ';
+        signOptions  = [
             testCertLoc,
-            '--pass',
+            'AU',
+            'Victoria',
+            'Corp',
+            'Test',
+            '--password',
+            testPassword
+        ];
+
+        buildCommand = 'zxpbuild package ';
+        buildOptions  = [
+            path.join(__dirname, 'ext'),
+            testZxpLoc,
+            testCertLoc,
+            '--password',
             testPassword
         ];
     });
 
-    it('Should throw an error because input is not provided', function (done) {
-        options.splice(0, 2);
-        testCommand += options.join(' ');
+    it('Should generate a self-signed cert', function (done) {
+        signCommand += signOptions.join(' ');
         cmd.get(
-            testCommand,
+            signCommand,
             function(err, data, stderr){
-                expect(data).to.match(/input property is required/);
+                expect(data).to.match(/Self-signed certificate generated successfully/);
                 done();
             }
         );
     });
 
-    it('Should throw an error because output is not provided', function (done) {
-        options.splice(2, 2);
-        testCommand += options.join(' ');
-
+    it('Should generate signed package', function (done) {
+        buildCommand += buildOptions.join(' ');
         cmd.get(
-            testCommand,
+            buildCommand,
             function(err, data, stderr){
-                expect(data).to.match(/output property is required/);
-                done();
-            }
-        );
-    });
-
-    it('Should throw an error because cert is not provided', function (done) {
-        options.splice(4, 2);
-        testCommand += options.join(' ');
-
-        cmd.get(
-            testCommand,
-            function(err, data, stderr){
-                expect(data).to.match(/cert property is required/);
-                done();
-            }
-        );
-    });
-
-    it('Should throw an error because password is not provided', function (done) {
-        options.splice(6, 2);
-        testCommand += options.join(' ');
-
-        cmd.get(
-            testCommand,
-            function(err, data, stderr){
-                expect(data).to.match(/password property is required/);
+                expect(data).to.match(/Signed successfully/);
                 done();
             }
         );

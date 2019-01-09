@@ -1,17 +1,15 @@
 {
   "name": "zxp-builder",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Adobe Extension Packager",
-  "main": "zxp-builder.js",
+  "main": "zxpbuild.js",
   "bin": {
-    "certgen": "certgen.js",
     "zxpbuild": "zxpbuild.js"
   },
   "scripts": {
-    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/certgen.test.js ./test/zxpbuild.test.js",
-    "test-build": "npm link && certgen -c AU -s Victoria -g Corp -n testCert -o ./bin/testCert.p12 -p testPs && zxpbuild -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p testPs;",
-    "test-cert": "npm link && certgen -c AU -s Victoria -g Corp -n testCert -o ./bin/testCert.p12 -p",
-    "test-sign": "npm link && zxpbuild -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p"
+    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/zxpbuild.test.js",
+    "test-cert": "npm link && zxpbuild cert ./bin/testCert.p12 AU Victoria Corp testCert -p",
+    "test-build": "npm run test-cert && zxpbuild package ./test/ext ./bin/test.zxp ./bin/testCert.p12 -p"
   },
   "repository": {
     "type": "git",
