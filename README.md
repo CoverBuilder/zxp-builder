@@ -3,7 +3,7 @@
 zxp-builder is a node.js command-line interface for [zxp-sign-cmd](https://github.com/codearoni/zxp-sign-cmd?#zxp-sign-cmd). This package makes it possible to integrate Adobe's extension signer (ZXPSignCmd) in your build process by passing on the commands via [npm-scripts](https://docs.npmjs.com/misc/scripts).
 
     "scripts": {
-        "sign": "zxpbuild sign -i path/to/dir -o path/to/file.zxp -c path/to/cert.p12 -p"
+        "sign": "zxpbuild package path/to/extension -o path/to/extension.zxp -c path/to/cert.p12 -p"
     }
 
 ### Commands
@@ -19,7 +19,7 @@ The `package` command packages and signs a directory.
     [-p, --password]    (String)  Password for P12 certificate. (Add Flag without value to request pass from user.)  
     (-t, --timestamp)   [String]  Timestamp server to be used.
 
-    zxpbuild package path/to/dir path/to/extension.zxp path/to/cert.p12 --password
+    zxpbuild package path/to/extension path/to/extension.zxp path/to/cert.p12 --password
 
 
 #### 2. Cert
@@ -40,6 +40,6 @@ The `cert` command creates a self signed certificate.
 
 ### Notes
 
-When the password flag (`-p` or `--password`) is present without value, the CLI will promt for the password on build.
+When no value is passed with the password flag (`-p`, `--password`) the CLI will promt for the password from user.
 
 Enjoy!
