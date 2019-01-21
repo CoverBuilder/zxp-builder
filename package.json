@@ -1,15 +1,16 @@
 {
   "name": "zxp-builder",
-  "version": "0.2.0",
+  "version": "1.0.1",
   "description": "Adobe Extension Packager",
   "main": "zxpbuild.js",
   "bin": {
     "zxpbuild": "zxpbuild.js"
   },
   "scripts": {
-    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/zxpbuild.test.js",
-    "test-cert": "npm link && zxpbuild cert ./bin/testCert.p12 AU Victoria Corp testCert -p",
-    "test-build": "npm run test-cert && zxpbuild package ./test/ext ./bin/test.zxp ./bin/testCert.p12 -p"
+    "buildEnv": "curl https://raw.githubusercontent.com/ES-Collection/build-node-venv/master/build-node-venv.sh > ./.bnv.sh && chmod +x ./.bnv.sh && ./.bnv.sh && rm ./.bnv.sh",
+    "test": "npm link && ./node_modules/mocha/bin/_mocha ./test/*.test.js",
+    "test-cert": "npm link && zxpbuild cert -o ./bin/testCert.p12 -c AU -s Victoria -g Corp -n testCert -p",
+    "test-package": "npm run test-cert && zxpbuild package -i ./test/ext -o ./bin/test.zxp -c ./bin/testCert.p12 -p"
   },
   "repository": {
     "type": "git",

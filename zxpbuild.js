@@ -1,16 +1,20 @@
 #!/usr/bin/env node
 
 var zxpSignCmd = require('zxp-sign-cmd');
-var zxpbuild   = require('commander');
-var readline   = require('readline');
+var readline = require('readline');
+var cli = require('commander');
 
 var rl = readline.createInterface({
     input: process.stdin,
-    output: process.stdout,
-    stdoutMuted: false
+    output: process.stdout
 });
 
-function requestPassBefore(cmd, options) {
+var zxpbuild = {
+    version: '0.3.0'
+};
+
+zxpbuild.requestPassBefore = function(cmd, options) {
+
     rl.stdoutMuted = true;
 
     rl.question('Certificate Password: ', (password) => {
@@ -28,7 +32,24 @@ function requestPassBefore(cmd, options) {
     };
 };
 
-function sign(options) {
+zxpbuild.wrapStrings = function( obj, stringProps ) {
+    // Make sure string properties with spaces are wrapped in quotes.
+    for (var i = 0; i < stringProps.length; i++) { 
+        if ( obj.hasOwnProperty(stringProps[i]) ) {
+            var strVal = obj[stringProps[i]];
+            if (typeof(strVal) !== 'string') {
+              continue;
+            };
+            strVal = strVal.trim();
+            if( strVal.indexOf(' ') >= 0 && !/^["'].*["']$/g.test(strVal) ){
+                obj[stringProps[i]] = '\"' + strVal + '\"';
+            };
+        };
+    };
+    return obj;
+};
+
+zxpbuild.sign = function(options) {
     zxpSignCmd.sign(options, function (error, result) {
         if(error && typeof error.message === 'string') {
             console.log(error.message);
@@ -40,8 +61,10 @@ function sign(options) {
     });
 };
 
-function selfSignedCert(options) {
-    zxpSignCmd.selfSignedCert(options, function (error, result) {
+zxpbuild.selfSignedCert = function(options) {
+    // Make sure string properties with spaces are wrapped in quotes.
+    var stringProps = ["state","group","name","orgUnit"];
+    zxpSignCmd.selfSignedCert(zxpbuild.wrapStrings(options, stringProps), function (error, result) {
         if(error && typeof error.message === 'string') {
             console.log(error.message);
             process.exit(1);
@@ -52,43 +75,45 @@ function selfSignedCert(options) {
     });
 };
 
-zxpbuild.version('0.2.0', '-v, --version');
+cli.version(zxpbuild.version, '-v, --version');
 
-zxpbuild.command('package <dir> <zxpfile> <p12>')
+cli.command('package')
   .description('Package and sign a directory')
-  .option('-t, --timestamp [value]', 'Timestamp server to be used.')
-  .option('-p, --password  [value]', 'Password for P12 certificate. (Add Flag without value to request password from user.)')
-  .action(function (dir, zxpfile, p12, options) {
-      options.input  = dir;
-      options.output = zxpfile;
-      options.cert = p12;
+  .option('-i, --input <input>', 'Directory that will be compiled into the packaged zxp file.')
+  .option('-o, --output <output>', 'Path and filename that the zxp will be exported to.')
+  .option('-c, --cert <cert>', 'Path and filename of the .p12 certificate that will be used to sign the extension.')
+  .option('-t, --timestamp [timestamp]', 'Timestamping server to be used.')
+  .option('-p, --password [password]', 'Password for P12 certificate. (Add Flag without value to request password from user.)')
+  .action(function ( options ) {
       if(options.password === true) {
           // User added the --pass flag without value
-          requestPassBefore(sign,options);
+          zxpbuild.requestPassBefore(zxpbuild.sign, options);
       } else {
-          sign(options);
+          zxpbuild.sign(options);
       };
   });
 
-zxpbuild.command('cert <filepath> <country> <province> <org> <name>')
+cli.command('cert')
   .description('Generate a self-signed certificate')
-  .option('-l, --locality  [value]', 'The locality for the certificate.')
-  .option('-u, --orgUnit   [value]', 'Name of the organizational unit.')
-  .option('-e, --email     [value]', 'Email associated with the certificate.')
-  .option('-d, --days      [value]', 'The number of days the certificate is valid.')
-  .option('-p, --password  [value]', 'Password for P12 certificate. (Add Flag without value to request password from user.)')
-  .action(function (filepath, country, province, org, name, options) {
-      options.output   = filepath;
-      options.country  = country;
-      options.province = province;
-      options.org      = org;
-      options.name     = name;
+  .option('-o, --output <output>', 'The file path to save certificate.')
+  .option('-c, --country <country>', 'Country associated with the certificate.')
+  .option('-s, --state <state>', 'State or province associated with the certificate.')
+  .option('-g, --group <group>', 'The group/organization associated with the certificate.')
+  .option('-n, --name <name>', 'Common name for certificate.')
+  .option('-l, --locality [locality]', 'The locality for the certificate.')
+  .option('-u, --orgUnit [orgUnit]', 'Name of the organizational unit.')
+  .option('-e, --email [email]', 'Email associated with the certificate.')
+  .option('-d, --days [days]', 'The number of days the certificate is valid.')
+  .option('-p, --password [password]', 'Password for P12 certificate. (Add Flag without value to request password from user.)')
+  .action(function ( options ) {
+      options.province = options.state;
+      options.org      = options.group;
       if(options.password === true) {
           // User added the --pass flag without value
-          requestPassBefore(selfSignedCert,options);
+          zxpbuild.requestPassBefore(zxpbuild.selfSignedCert, options);
       } else {
-          selfSignedCert(options);
+          zxpbuild.selfSignedCert(options);
       };
   });
 
-zxpbuild.parse(process.argv);
+cli.parse(process.argv);
