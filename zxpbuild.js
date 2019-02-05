@@ -3,6 +3,7 @@
 var zxpSignCmd = require('zxp-sign-cmd');
 var readline = require('readline');
 var cli = require('commander');
+var fs = require('fs');
 
 var rl = readline.createInterface({
     input: process.stdin,
@@ -10,7 +11,7 @@ var rl = readline.createInterface({
 });
 
 var zxpbuild = {
-    version: '0.3.0'
+    version: '0.3.1'
 };
 
 zxpbuild.requestPassBefore = function(cmd, options) {
@@ -50,6 +51,15 @@ zxpbuild.wrapStrings = function( obj, stringProps ) {
 };
 
 zxpbuild.sign = function(options) {
+    // zxpSignCmd does not over-write existing packages
+    // we do!
+    fs.unlink(options.output, function(err) {
+        if(err && err.code !== 'ENOENT') {
+            // Maybe we don't have enough permission?
+            throw new Error("Could not overwrite existing package.");
+        };
+    });
+
     zxpSignCmd.sign(options, function (error, result) {
         if(error && typeof error.message === 'string') {
             console.log(error.message);
@@ -62,8 +72,18 @@ zxpbuild.sign = function(options) {
 };
 
 zxpbuild.selfSignedCert = function(options) {
+    // zxpSignCmd does not over-write existing certificates
+    // we do!
+    fs.unlink(options.output, function(err) {
+        if(err && err.code !== 'ENOENT') {
+            // Maybe we don't have enough permission?
+            throw new Error("Could not overwrite existing certificate.");
+        };
+    });
+
     // Make sure string properties with spaces are wrapped in quotes.
     var stringProps = ["state","group","name","orgUnit"];
+
     zxpSignCmd.selfSignedCert(zxpbuild.wrapStrings(options, stringProps), function (error, result) {
         if(error && typeof error.message === 'string') {
             console.log(error.message);
