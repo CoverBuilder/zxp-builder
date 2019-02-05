@@ -47,7 +47,7 @@ describe('zxpbuild tests', function () {
     it('Should throw an error because output is not provided', function (done) {
         options.splice(2, 2);
         testCommand += options.join(' ');
-
+        console.log(testCommand);
         cmd.get(
             testCommand,
             function(err, data, stderr){
