@@ -10,6 +10,10 @@ zxp-builder is a node.js command-line interface for [zxp-sign-cmd](https://githu
 
 > Note that you can leave password blank to request from user
 
+## Install
+
+    npm install zxp-builder --save-dev
+
 ### Commands
 
 #### 1. Package
